@@ -14,10 +14,8 @@ The openframeworks app requires several different addons:
 
 ![imgs/addons.png](imgs/addons.png)
 
-FIXME: automatic install of all addons using setup.py file
-
 ### Installing the addons
-You can either run the `setup.py` (which will go through through each require addon and clone it) or manually download each addon and put it in your openframeworks addons folder.
+You can either run the `setup.py` using python3 (which will go through through each require addon and clone it) or manually download each addon and put it in your openframeworks addons folder.
 
 #### Using setup.py
 
