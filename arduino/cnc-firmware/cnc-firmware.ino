@@ -73,16 +73,6 @@ void setup() {
   // these values will be change as soon as we home
   current_pos[0] = 0;
   current_pos[1] = 0;
-
-  // FOR DEBUGGING
-
-//  for (int i = 0; i < 3; i++){
-//    move_x_motor(40, RIGHT, false);
-//    delay(1000);
-//    move_x_motor(40, LEFT, false);
-//    delay(1000);  
-//  }
-
 }
 
 void loop() {
@@ -94,7 +84,6 @@ void loop() {
   // read any incoming serial data (see on_packet_received() )
   serial.update();
 
-  //debug_switches();
 }
 
 // SERIAL communication
@@ -215,34 +204,7 @@ void move_one_step(int motor_pin){
     digitalWrite(motor_pin, LOW);
     delayMicroseconds(MICROS_BETWEEN_STEPS);
   }
-  
-  // go slower on the x axis
-//  if (motor_pin == step_pins[2]){
-//    for (int i = 0; i < 2; i++){
-//      digitalWrite(motor_pin, HIGH);
-//      digitalWrite(motor_pin, LOW);
-//      delayMicroseconds(MICROS_BETWEEN_X_STEPS);
-//    }
-//  }
-//  else {
-//    for (int i = 0; i < 2; i++){
-//      digitalWrite(motor_pin, HIGH);
-//      digitalWrite(motor_pin, LOW);
-//      delayMicroseconds(MICROS_BETWEEN_STEPS);
-//    } 
-//  }
 }
-
-/*
-void move_one_step(int motor_pin){
-  
-  if (current_millis - prev_step_millis >= MILLIS_BETWEEN_STEPS) {
-    prev_step_millis += MILLIS_BETWEEN_STEPS;
-    digitalWrite(motor_pin, HIGH);
-    digitalWrite(motor_pin, LOW);
-  }
-}
-*/
 
 //////////////// HOMING ////////////////
 void home_motors(){
