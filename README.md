@@ -1,4 +1,4 @@
-# maca-final
+# paintball-paintings
 
 The openframeworks app requires several different addons:
 
