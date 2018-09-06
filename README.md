@@ -15,9 +15,11 @@ The openframeworks app requires several different addons:
 ![imgs/addons.png](imgs/addons.png)
 
 ### Installing the addons
-You can either run the `setup.py` using python3 (which will go through through each require addon and clone it) or manually download each addon and put it in your openframeworks addons folder.
+You can either run the `setup.py` using python3 (see below) or manually download each addon and put it in your openframeworks addons folder.
 
 #### Using setup.py
+
+The setup.py file will automagically download all the required addons that you don't have installed into your openframeworks addons folder.
 
 1. Open the `setup.py` with a text editor and set the `OF_ROOT` variable to your openframeworks installation folder. In my case, it is `/Volumes/LaCie3TBYas/Code/c++/of_v0.10.0_osx_release` so I will change it like this:
 `OF_ROOT="/Volumes/LaCie3TBYas/Code/c++/of_v0.10.0_osx_release"`
