@@ -2,13 +2,13 @@
 
 Please check the online version of this repo, available here: [https://github.com/vvzen/paintball-portraits](https://github.com/vvzen/paintball-portraits)
 
-The installation works by getting the live feed from a PS3 eye camera, waiting for the user input, then processing the PS3 cam image by using the coherent line drawing algorithm, sampling the resulting black & white image with some dots and then streaming the coordinates of each point to the cnc machine via serial communication.
+The installation works by getting the live feed from a PS3 eye camera, waiting for the user input, then processing the PS3 cam image by using the [coherent line drawing algorithm](https://www.youtube.com/watch?v=48fTXKUTM-8), sampling the resulting black & white image with some dots and then streaming the coordinates of each point to the cnc machine via serial communication.
 
 Below you can find an example of the sampling process applied to the processed image:
 
 ![imgs/example_sampling.png](imgs/example_sampling.png)
 
-The serial communication is bundled inside the osc protocol for readability reasons: using raw byte buffers has definetely less overhead but there was no need for it in my case.
+The serial communication is bundled inside the osc protocol for readability reasons: using raw byte buffers has definitely less overhead but there is no need for it in my case.
 
 Everytime the of app sends a serial message to the arduino, it waits for the arduino to send back the same message as a response and then procedes with the next message, until each dot has been shot on the canvas.
 
