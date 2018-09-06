@@ -1,0 +1,5 @@
+# README
+
+The advised method for compiling this project is by using the make system.
+Just run make && make RunRelease in order to compile and run the app.
+For more info, check this article: [http://valerioviperino.me/openframeworks/personal-dev-setup](http://valerioviperino.me/openframeworks/personal-dev-setup)

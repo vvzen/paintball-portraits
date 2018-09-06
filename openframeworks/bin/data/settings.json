@@ -1,0 +1,26 @@
+{
+  "id": "auto",
+  "frame_rate": 60,
+  "width": 500,
+  "height": 450,
+  "use_texture": true,
+  "pixel_format": "OF_PIXELS_RGB",
+  "grabber": {
+    "type": "ofxPS3EyeGrabber",
+    "auto_gain": false,
+    "auto_white_balance": false,
+    "gain": 20,
+    "exposure": 200,
+    "sharpness": 0,
+    "hue": 143,
+    "brightness": 50,
+    "contrast": 37,
+    "red_balance": 128,
+    "green_balance": 128,
+    "blue_balance": 128,
+    "flip_horizontal": true,
+    "flip_vertical": false,
+    "test_pattern": false,
+    "enable_led": false
+  }
+}
