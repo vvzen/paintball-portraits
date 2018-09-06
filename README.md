@@ -1,5 +1,7 @@
 # paintball-paintings
 
+Please check the online version of this repo, available here: [https://github.com/vvzen/paintball-portraits](https://github.com/vvzen/paintball-portraits)
+
 The installation works by getting the live feed from a PS3 eye camera, waiting for the user input, then processing the PS3 cam image by using the coherent line drawing algorithm, sampling the resulting black & white image with some dots and then streaming the coordinates of each point to the cnc machine via serial communication.
 
 Below you can find an example of the sampling process applied to the processed image:

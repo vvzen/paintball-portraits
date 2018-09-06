@@ -8,8 +8,6 @@
 #include "ofxOsc.h"
 #include "ofxFaceTracker.h"
 #include <chrono>
-#include "tsp.h" // for solving tsp using a genetic algorithm, thanks to: https://github.com/marcoscastro/tsp_genetic
-#include <map>
 
 class ofApp : public ofBaseApp{
 public:
@@ -29,7 +27,6 @@ public:
 	// a shared_ptr avoids manual allocation of memory (new/delete)
 	// when the reference count of the pointed object reaches 0 memory is freed
 	std::shared_ptr<ofVideoGrabber> video_grabber;
-	// ofVideoGrabber video_grabber;
 
 	ofFbo light_fbo;
 
@@ -41,7 +38,6 @@ public:
 	ofRectangle face_tracking_rectangle;
 
 	// TSP (cnc path optimization)
-	// int solve_tsp_with_ga(const vector<glm::vec2> & in_points, vector<glm::vec2> & out_points);
 	// Nearest Neighbour approach for finding best path
 	int solve_nn(const vector<glm::mediump_ivec2> & in_points, vector<glm::mediump_ivec2> & out_points);
 
@@ -52,12 +48,12 @@ public:
 	ofImage input_image, output_image;
 	ofFbo dots_fbo;
 	// coherent line drawing parameters
-	const int halfw = 6;
-	const int smooth_passes = 1;
-	const float sigma1 = 4.50; // degree of coherence
-	const float sigma2 = 0.95905;
-	const float tau = 0.98;
-	const int black = -8;
+	const int HALFW = 6;
+	const int SMOOTH_PASSES = 1;
+	const float SIGMA1 = 4.50; // degree of coherence
+	const float SIGMA2 = 0.95905;
+	const float TAU = 0.98;
+	const int BLACK_LEVEL = -8;
 	const int threshold = 100;
 	// vector<glm::vec2> dots, sorted_dots;
 	vector<glm::mediump_ivec2> dots, sorted_dots;
@@ -65,7 +61,7 @@ public:
 
 	// SERIAL
 	const int BAUD_RATE = 9600;
-	void init_serial_devices(ofxIO::SLIPPacketSerialDevice &device1);
+	void init_serial_device(ofxIO::SLIPPacketSerialDevice &device1);
 	void send_current_command(int i); // used to send commands to the paintball machine
 	int current_command_index; // keeps track of the current command that we're sending
 	const int SERIAL_INITIAL_DELAY_TIME = 1; // seconds
@@ -76,7 +72,7 @@ public:
 	// CNC
 	// cnc machine movement boundaries
 	const int MACHINE_X_MIN_POS = 5;
-	const int MACHINE_X_MAX_POS = (cam_width) + MACHINE_X_MIN_POS; // FIXME: calibrate the x axis 
+	const int MACHINE_X_MAX_POS = (cam_width) + MACHINE_X_MIN_POS;
 	const int MACHINE_Y_MIN_POS = 0;
 	const int MACHINE_Y_MAX_POS = (cam_height) + MACHINE_Y_MIN_POS;
 	const int INTEREST_RADIUS = 180;

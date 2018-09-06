@@ -10,7 +10,7 @@ void ofApp::setup() {
 
 	face_tracking_rectangle.set(glm::mediump_ivec2(cam_width/4, cam_height/4), cam_width - cam_width/2, cam_height - cam_height/2);
 
-	// set the logging to a file
+	// if needed, set the logging to a file instead of stdout
 	// ofLogToFile("paintball.log");
 
 	// CAMERA
@@ -18,8 +18,7 @@ void ofApp::setup() {
     ofJson config = ofLoadJson("settings.json");
 	// Create a grabber from the JSON
     video_grabber = ofxPS3EyeGrabber::fromJSON(config);
-    // video_grabber.setDeviceID(0);
-	// video_grabber.initGrabber(cam_width, cam_height);
+
 	ofSetVerticalSync(true);
 	
 	// FACE TRACKING
@@ -39,21 +38,11 @@ void ofApp::setup() {
 	estimated_elapsed_time = "";
 	real_elapsed_time = "";
 
-	// connect to the 2 arduinos
-	init_serial_devices(cnc_device);
+	// connect to the arduino mega
+	init_serial_device(cnc_device);
 
 	dots_fbo.allocate(cam_width, cam_height, GL_RGBA, 8);
 	input_image.allocate(cam_width, cam_height, OF_IMAGE_GRAYSCALE);
-	// light_image.allocate(cam_width, cam_height, OF_IMAGE_GRAYSCALE);
-
-	ofLogNotice() << "input_image: " << input_image.getWidth() << "x" << input_image.getHeight();
-
-	ofLogNotice() << "10mm in pixels: " << ofMap(10, 0, MACHINE_X_MAX_POS, 0, cam_width, true);
-
-	// clear the light fbo
-	// light_fbo.begin();
-	// ofClear(0);
-	// light_fbo.end();
 }
 
 //--------------------------------------------------------------
@@ -63,34 +52,17 @@ void ofApp::update(){
     video_grabber->update();
 	if (video_grabber->isFrameNew() && !draw_dots){
 
+		// get the pixels from the cam and put them into the input_image
 		ofPixels & grabber_pixels = video_grabber->getGrabber<ofxPS3EyeGrabber>()->getPixels();
 		input_image.setFromPixels(grabber_pixels);
 		input_image.setImageType(OF_IMAGE_GRAYSCALE);
-		// input_image.mirror(false, true);
 
 		// track face
         face_tracker.update(ofxCv::toCv(input_image));
 
         // update the tracked face position
         tracked_face_position = face_tracker.getPosition();
-
-		//input_image.crop(tracked_face_position.x- INTEREST_RADIUS/2, tracked_face_position.y-INTEREST_RADIUS/2, INTEREST_RADIUS, INTEREST_RADIUS);
 	}
-
-	// Draw the light!
-    // light_grabber->update();
-	// if (light_grabber->isFrameNew() && !draw_dots){
-		
-
-	// 	// take the image from the videograbber and draw it
-	// 	ofPixels & grabber_pixels = light_grabber->getGrabber<ofxPS3EyeGrabber>()->getPixels();
-	// 	light_image.setFromPixels(grabber_pixels);
-	// 	light_image.setImageType(OF_IMAGE_GRAYSCALE);
-		
-	// 	light_fbo.begin();
-	// 	light_image.draw(0, 0);
-	// 	light_fbo.end();
-	// }
 
 	// Save the time when the button is pressed
 	if (start_button_pressed){
@@ -100,9 +72,8 @@ void ofApp::update(){
 	
 		int elapsed_seconds = (int) ofGetElapsedTimef();
 
-		// wait a bit before sending stuff to serial
+		// wait some time before sending stuff to serial
 		while (elapsed_seconds < button_pressed_time + SERIAL_INITIAL_DELAY_TIME){
-			// ofLogVerbose() << "elapsed time: " << elapsed_seconds;
 			elapsed_seconds = (int) ofGetElapsedTimef();
 		}
 
@@ -125,6 +96,8 @@ void ofApp::draw(){
 
 	ofBackground(ofColor::white);
 
+	// if the user hasn't pressed the space bar,
+	// show the webcam live feed
 	if (!draw_dots){
 		ofxCv::threshold(input_image, 120);
 		input_image.draw(0,0);
@@ -132,11 +105,11 @@ void ofApp::draw(){
 		ofPushStyle();
 		ofNoFill();
 		if (ofDist(tracked_face_position.x, tracked_face_position.y, ofGetWidth()/2, ofGetHeight()/2) > FACE_DISTANCE_THRESHOLD){
-			ofDrawBitmapStringHighlight("Please put your face inside the rectangle", 36, 35);
+			ofDrawBitmapStringHighlight("Please put your face inside the rectangle", 50, 35);
 			ofSetColor(ofColor::red);
 		}
 		else {
-			ofDrawBitmapStringHighlight("Press the red button to take a machine portrait!", 24, 35);
+			ofDrawBitmapStringHighlight("Press the space bar to take a machine portrait!", 34, 35);
 			ofSetColor(ofColor::green);
 		}
 		ofDrawRectangle(face_tracking_rectangle.x, face_tracking_rectangle.y, face_tracking_rectangle.width, face_tracking_rectangle.height);
@@ -170,7 +143,10 @@ void ofApp::keyPressed(int key){
 //--------------------------------------------------------------
 // SERIAL
 //--------------------------------------------------------------
-void ofApp::init_serial_devices(ofxIO::SLIPPacketSerialDevice &cnc){
+// initialise the communication settings with the arduino mega
+// @args:	&cnc 		--> the required serial slip device (ofxIO::SLIPPacketSerialDevice)
+//--------------------------------------------------------------
+void ofApp::init_serial_device(ofxIO::SLIPPacketSerialDevice &cnc){
 
 	std::vector<ofxIO::SerialDeviceInfo> devices_info = ofxIO::SerialDeviceUtils::listDevices();
 
@@ -182,10 +158,10 @@ void ofApp::init_serial_devices(ofxIO::SLIPPacketSerialDevice &cnc){
 
 	if (!devices_info.empty()){
 
-        // Connect the devices
-        bool success_1 = cnc.setup(devices_info[0], BAUD_RATE);
+        // Connect to the device
+        bool success = cnc.setup(devices_info[0], BAUD_RATE);
 
-        if (success_1){
+        if (success){
             cnc.registerAllEvents(this);
             ofLogNotice("ofApp::setup") << "Successfully setup " << devices_info[0];
         }
@@ -212,7 +188,7 @@ void ofApp::send_current_command(int i){
 	ofLogNotice("send_current_command") << osc_message; 
     ofLogNotice("send_current_command") << current_command_index+1 << "/" << ofToString(sorted_dots.size());
 
-    // check onSerialBuffer() to see what happens after we sent a command
+    // check onSerialBuffer() to see what happens after we send a command
 	send_osc_bundle(osc_message, cnc_device, 1024);
 }
 
@@ -231,12 +207,12 @@ void ofApp::run_coherent_line_drawing(const ofImage &in, ofImage &out, ofFbo &do
 	sorted_dots.clear();
 
 	// Do the coherent line drawing magic
-	ofxCv::CLD(input_image, output_image, halfw, smooth_passes, sigma1, sigma2, tau, black);
+	ofxCv::CLD(input_image, output_image, HALFW, SMOOTH_PASSES, SIGMA1, SIGMA2, TAU, BLACK_LEVEL);
 	ofxCv::invert(output_image);
 	ofxCv::threshold(output_image, threshold);
 	output_image.update();
 	
-	// create_debugging_quad(dots, dots_fbo);
+	// create_debugging_quad(dots, dots_fbo); // draw a nice quad, useful for calibrating the machine
 
 	// Draw the dots on their fbo
 	ofLogNotice() << "circle size: " << circle_size;
@@ -248,22 +224,13 @@ void ofApp::run_coherent_line_drawing(const ofImage &in, ofImage &out, ofFbo &do
 	int ending_point_x = face_tracking_rectangle.x + face_tracking_rectangle.width;
 	int ending_point_y = face_tracking_rectangle.y + face_tracking_rectangle.height;
 
-	// FIXME: DEBUGGING the 4 corner points
-	// for (int i = 0; i < 2; i++ ){
-	// 	// dots.push_back(glm::mediump_ivec2(0, 0));
-	// 	// dots.push_back(glm::mediump_ivec2(ending_point_x, 0));
-	// 	dots.push_back(glm::mediump_ivec2(ending_point_x, (ending_point_y)));
-	// 	dots.push_back(glm::mediump_ivec2(0, (ending_point_y)));
-	// }
-	// sorted_dots = dots;
-
 	// Sample the pixels from the coherent line image
 	// and add dots if we find a white pixel
 	for (int x = face_tracking_rectangle.x; x < ending_point_x; x+= sampling_size){
 		for (int y = face_tracking_rectangle.y; y < ending_point_y; y+= sampling_size){
 
 			if (dots.size() < max_dots){
-				// if (ofDist(x, y, tracked_face_position.x, tracked_face_position.y) < INTEREST_RADIUS){
+				
 				if (ofDist(x, y, ofGetWidth()/2, ofGetHeight()/2) < INTEREST_RADIUS){
 					ofColor c = output_image.getColor(x, y);
 
@@ -309,6 +276,11 @@ void ofApp::run_coherent_line_drawing(const ofImage &in, ofImage &out, ofFbo &do
 	ofLogNotice("run_coherent_line_drawing()") << "completed";
 }
 
+//--------------------------------------------------------------
+// draws a nice rectangle made of points
+// @args:	&dots		--> the vector where it will push the dots
+// @args:	dots_fbo	--> an fbo on top of which we will draw the dots
+//--------------------------------------------------------------
 void ofApp::create_debugging_quad(vector<glm::mediump_ivec2> & dots, ofFbo & dots_fbo){
 
 	dots_fbo.begin();
@@ -335,7 +307,7 @@ void ofApp::create_debugging_quad(vector<glm::mediump_ivec2> & dots, ofFbo & dot
 		ofSetColor(ofColor::orange);
 		ofDrawCircle(x, face_tracking_rectangle.y + quad_width, circle_size);
 	}
-	// // left Y line
+	// left Y line
 	for (int y = face_tracking_rectangle.y + quad_width; y >= face_tracking_rectangle.y; y-=sampling_size){
 		dots.push_back(glm::mediump_ivec2(face_tracking_rectangle.x, y));
 		ofSetColor(ofColor::orange);
@@ -455,6 +427,13 @@ void ofApp::append_message(ofxOscMessage &message, osc::OutboundPacketStream &p)
 }
 
 //--------------------------------------------------------------
+// TSP
+//--------------------------------------------------------------
+// send the message bundled inside using the osc protocol
+// @args: 	m 		 	--> the points used to compute the path optimization
+// 	  		device	 	--> a ofxSerial device
+// 	  		buffer_size	--> the size of the serial buffer
+//--------------------------------------------------------------
 void ofApp::send_osc_bundle(ofxOscMessage &m, ofxIO::SLIPPacketSerialDevice &device, int buffer_size){
     // this codes come from ofxOscSender::sendMessage in ofxOscSender.cpp
     // static const int OUTPUT_BUFFER_SIZE = buffer_size;
@@ -488,16 +467,6 @@ void ofApp::onSerialBuffer(const ofx::IO::SerialBufferEventArgs &args){
 		
 		ofLogNotice("onSerialBuffer") << "homing done, starting";
 
-		// FIXME: TODO: every 50 shots reset the home
-		// if (current_command_index % 20 == 19){
-		// 	ofLogNotice() << "sending home";
-		
-		// 	ofxOscMessage osc_message;
-		// 	osc_message.setAddress("/home");
-		// 	osc_message.addIntArg(0);
-		// 	send_osc_bundle(osc_message, cnc_device, 1024);
-		// }
-
 		// start the painting by sending the values over serial
 		send_current_command(current_command_index);
 	}
@@ -511,7 +480,6 @@ void ofApp::onSerialBuffer(const ofx::IO::SerialBufferEventArgs &args){
 			glm::mediump_ivec2 current_pos = sorted_dots.at(current_command_index);
 
 			// map back the position from mm to pixels
-			// glm::mediump_ivec2 current_pos_mapped(current_pos.x * 2, current_pos.y * 2);
 			glm::mediump_ivec2 mapped_pos(
 				ofMap(current_pos.x, face_tracking_rectangle.x, face_tracking_rectangle.x + face_tracking_rectangle.width, MACHINE_X_MIN_POS, MACHINE_X_MAX_POS, true),
 				ofMap(current_pos.y, face_tracking_rectangle.y, face_tracking_rectangle.y + face_tracking_rectangle.height, MACHINE_Y_MIN_POS, MACHINE_Y_MAX_POS, true)
@@ -552,13 +520,6 @@ void ofApp::onSerialBuffer(const ofx::IO::SerialBufferEventArgs &args){
 			std::exit(0);
 		}
 	}
-	else if (received_command.substr(0, 7) == "reqmove"){
-
-	}
-	// filter out the switch debugging messages
-	else if (received_command.substr(0, 6) == "switch"){
-		// TODO:
-	}
 }
 
 //--------------------------------------------------------------
@@ -571,7 +532,7 @@ void ofApp::onSerialError(const ofx::IO::SerialBufferErrorEventArgs &args){
 // EXIT
 //--------------------------------------------------------------
 void ofApp::exit(){
+	// save the current image
 	ofSaveScreen("current_portrait.png");
 	cnc_device.unregisterAllEvents(this);
-	// cam_servo_device.unregisterAllEvents(this);
 }
