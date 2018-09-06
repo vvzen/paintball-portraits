@@ -1,5 +1,21 @@
 # paintball-paintings
 
+The installation works by getting the live feed from a PS3 eye camera, waiting for the user input, then processing the PS3 cam image by using the coherent line drawing algorithm, sampling the resulting black & white image with some dots and then streaming the coordinates of each point to the cnc machine via serial communication.
+
+The serial communication is bundled inside the osc protocol for readability reasons: using raw byte buffers has definetely less overhead but there was no need for it in my case.
+
+Everytime the of app sends a serial message to the arduino, it waits for the arduino to send back the same message as a response and then procedes with the next message, until each dot has been shot on the canvas.
+
+The path of the gun is optimised using a nearest neighbour algorithm, which definitely outperforms any kind of genetic algorithm approach that I tested.
+(have a look [here](https://github.com/vvzen/maca-final/tree/master/shortest-path-test))
+
+
+
+## ARDUINO
+Open the arduino sketch and upload it to the arduino.
+Check the required libraries by looking at the top of the arduino sketch.
+
+## OPENFRAMEWORKS
 The openframeworks app requires several different addons:
 
 1. ofxOpenCv
