@@ -1,6 +1,6 @@
 # please run this program using python3!
 # CHANGE THIS PATH TO YOUR OPENFRAMEWORKS PATH
-OF_ROOT="/Users/vv/code/of/latest_openFrameworks/test"
+OF_ROOT="/Users/vv/code/of_v0.10.0_osx_release"
 
 import os
 import re
