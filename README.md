@@ -4,7 +4,7 @@ The installation works by getting the live feed from a PS3 eye camera, waiting f
 
 Below you can find an example of the sampling process applied to the processed image:
 
-![example_sampling.png](example_sampling.png)
+![imgs/example_sampling.png](imgs/example_sampling.png)
 
 The serial communication is bundled inside the osc protocol for readability reasons: using raw byte buffers has definetely less overhead but there was no need for it in my case.
 
