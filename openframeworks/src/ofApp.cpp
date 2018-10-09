@@ -8,7 +8,7 @@ void ofApp::setup() {
 
 	ofSetLogLevel(OF_LOG_VERBOSE);
 
-	face_tracking_rectangle.set(glm::mediump_ivec2(cam_width/4, cam_height/4), cam_width - cam_width/2, cam_height - cam_height/2);
+	face_tracking_rectangle.set(glm::mediump_ivec2(CAM_WIDTH/4, CAM_HEIGHT/4), CAM_WIDTH - CAM_WIDTH/2, CAM_HEIGHT - CAM_HEIGHT/2);
 
 	// if needed, set the logging to a file instead of stdout
 	// ofLogToFile("paintball.log");
@@ -25,7 +25,7 @@ void ofApp::setup() {
     face_tracker.setup();
 
 	// DOTS
-	circle_size = ofMap(16, MACHINE_X_MIN_POS, MACHINE_X_MAX_POS, 0, cam_width);
+	circle_size = ofMap(16, MACHINE_X_MIN_POS, MACHINE_X_MAX_POS, 0, CAM_WIDTH);
 
 	// save start time
 	start_time = std::chrono::steady_clock::now();
@@ -41,8 +41,8 @@ void ofApp::setup() {
 	// connect to the arduino mega
 	init_serial_device(cnc_device);
 
-	dots_fbo.allocate(cam_width, cam_height, GL_RGBA, 8);
-	input_image.allocate(cam_width, cam_height, OF_IMAGE_GRAYSCALE);
+	dots_fbo.allocate(CAM_WIDTH, CAM_HEIGHT, GL_RGBA, 8);
+	input_image.allocate(CAM_WIDTH, CAM_HEIGHT, OF_IMAGE_GRAYSCALE);
 }
 
 //--------------------------------------------------------------
@@ -116,7 +116,8 @@ void ofApp::draw(){
 		ofPopStyle();
 	}
 	else {
-		dots_fbo.draw(0, 0);
+		output_image.draw(0, 0);
+		//dots_fbo.draw(0, 0);
 		ofPushStyle();
 		// draw in green the current shot
 		glm::mediump_ivec2 current_pos = sorted_dots.at(current_command_index);
@@ -339,7 +340,7 @@ int ofApp::solve_nn(const vector<glm::mediump_ivec2> & in_points, vector<glm::me
 
         // ofLogNotice() << " out_points: " << out_points.size() << ", in_points: " << in_points.size();
 
-        float min_distance = MAXFLOAT;
+        float min_distance = FLT_MAX;
 
         for (int j = 0; j < in_points.size(); j++){
 

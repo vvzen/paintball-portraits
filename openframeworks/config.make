@@ -6,9 +6,9 @@
 ################################################################################
 # OF ROOT
 #   The location of your root openFrameworks installation
-#       (default) OF_ROOT = ../../../of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release 
+#       (default) OF_ROOT = ../../../Code/of/of_v0.10.0_linux64gcc5_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release 
 ################################################################################
-# OF_ROOT = ../../../of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release
+# OF_ROOT = ../../../Code/of/of_v0.10.0_linux64gcc5_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release/of/of_v0.10.0_osx_release
 
 ################################################################################
 # PROJECT ROOT

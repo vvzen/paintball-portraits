@@ -5,6 +5,6 @@ ofxIO
 ofxKinect
 ofxOpenCv
 ofxOsc
-ofxPS3EyeGrabber
 ofxPoco
+ofxPS3EyeGrabber
 ofxSerial

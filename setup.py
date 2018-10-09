@@ -1,6 +1,8 @@
 # please run this program using python3!
 # CHANGE THIS PATH TO YOUR OPENFRAMEWORKS PATH
-OF_ROOT="/Users/vv/code/of_v0.10.0_osx_release"
+#OF_ROOT="/Users/vv/code/of_v0.10.0_osx_release"
+OF_ROOT="/home/vvzen/Documents/Code/of/of_v0.10.0_linux64gcc5_release"
+
 
 import os
 import re

@@ -21,8 +21,8 @@ public:
 	bool start_button_pressed;
 
 	// PS3 EYE CAMERA
-	const int cam_width = 500;
-	const int cam_height = 450;
+	const int CAM_WIDTH = 500;
+	const int CAM_HEIGHT = 450;
 	// the video grabber for the PS3Eye Cam
 	// a shared_ptr avoids manual allocation of memory (new/delete)
 	// when the reference count of the pointed object reaches 0 memory is freed
@@ -72,9 +72,9 @@ public:
 	// CNC
 	// cnc machine movement boundaries
 	const int MACHINE_X_MIN_POS = 5;
-	const int MACHINE_X_MAX_POS = (cam_width) + MACHINE_X_MIN_POS;
+	const int MACHINE_X_MAX_POS = (CAM_WIDTH) + MACHINE_X_MIN_POS;
 	const int MACHINE_Y_MIN_POS = 0;
-	const int MACHINE_Y_MAX_POS = (cam_height) + MACHINE_Y_MIN_POS;
+	const int MACHINE_Y_MAX_POS = (CAM_HEIGHT) + MACHINE_Y_MIN_POS;
 	const int INTEREST_RADIUS = 180;
 	const int STEPS_PER_MM = 5;
 	const double SECONDS_BETWEEN_STEPS = 0.0005;
